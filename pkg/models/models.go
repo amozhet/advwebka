@@ -13,13 +13,20 @@ var (
 	ErrDuplicateEmail     = errors.New("models: duplicate email")
 )
 
-type News struct {
-	ID       int
-	Title    string
-	Content  string
-	Details  string
-	Created  time.Time
-	Category string
+type Movies struct {
+	ID             int
+	Title          string
+	Original_title string
+	Genre          string
+	Release_year   time.Time
+	Runtime        time.Duration
+	Synopsis       string
+	Rating         float64
+	Director       string
+	Cast           string
+	Distributor    string
+	Trailer_url    string
+	Poster_url     string
 }
 
 type User struct {

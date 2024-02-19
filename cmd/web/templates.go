@@ -18,8 +18,8 @@ type templateData struct {
 	Form            *forms.Form
 	IsAuthenticated bool
 
-	News  *models.News
-	New2s []*models.News
+	News  *models.Movies
+	New2s []*models.Movies
 	User  *models.User
 }
 

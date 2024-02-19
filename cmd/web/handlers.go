@@ -51,7 +51,7 @@ func (app *application) category(w http.ResponseWriter, r *http.Request) {
 	segments := strings.Split(r.URL.Path, "/")
 	category := segments[len(segments)-1]
 
-	s, err := app.movies.LatestByCategory(category)
+	s, err := app.movies.LatestByGenre(category)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
 			app.notFound(w)
