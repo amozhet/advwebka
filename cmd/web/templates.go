@@ -1,4 +1,4 @@
-//routes.go
+// cmd/web/routes.go
 
 package main
 

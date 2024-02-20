@@ -1,4 +1,4 @@
-//main.go
+// cmd/web/main.go
 
 package main
 

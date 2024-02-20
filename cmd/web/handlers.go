@@ -1,4 +1,4 @@
-//handlers.go
+// cmd/web/handlers.go
 
 package main
 
@@ -79,7 +79,7 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form := forms.New(r.PostForm)
-	form.Required("title", "genre", "released_year_runtime", "director")
+	form.Required("title", "genre", "released_year", "director", "released_status")
 	form.MaxLength("title", 100)
 
 	if !form.Valid() {
@@ -93,26 +93,19 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	releasedYearRuntime := form.Get("released_year_runtime")
-	yearRuntime := strings.Split(releasedYearRuntime, "_")
-	if len(yearRuntime) != 2 {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
-
-	releasedYear, err := time.Parse("2006-12-31", yearRuntime[0])
+	releasedYear, err := time.Parse("2006-01-02 15:04:00", form.Get("released_year"))
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
-
-	runtime, err := time.ParseDuration(yearRuntime[1])
+	releasedStatusStr := form.Get("released_status")
+	releasedStatus, err := strconv.ParseBool(releasedStatusStr)
 	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
+		// Handle error if conversion fails
 		return
 	}
 
-	id, err := app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, runtime, form.Get("synopsis"),
+	id, err := app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, releasedStatus, form.Get("synopsis"),
 		rating, form.Get("director"), form.Get("cast"), form.Get("distributor"))
 	if err != nil {
 		app.serverError(w, err)

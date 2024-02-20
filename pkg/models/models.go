@@ -14,18 +14,17 @@ var (
 )
 
 type Movies struct {
-	ID                    int
-	Title                 string
-	Original_title        *string
-	Genre                 string
-	Released_year_runtime time.Time
-	Released_year         time.Time
-	Runtime               time.Time
-	Synopsis              string
-	Rating                float64
-	Director              string
-	Cast                  string
-	Distributor           string
+	ID              int
+	Title           string
+	Original_title  *string
+	Genre           string
+	Released_year   time.Time
+	Released_status bool
+	Synopsis        string
+	Rating          float64
+	Director        string
+	Cast            string
+	Distributor     string
 }
 
 type User struct {

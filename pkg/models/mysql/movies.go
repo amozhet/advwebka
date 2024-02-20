@@ -15,14 +15,14 @@ type MoviesModel struct {
 
 func (m *MoviesModel) Get(id int) (*models.Movies, error) {
 
-	stmt := `SELECT id, title, original_title, genre, released_year_runtime, synopsis, rating, director, cast, distributor
+	stmt := `SELECT id, title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor
     WHERE id = ?`
 
 	row := m.DB.QueryRow(stmt, id)
 
 	s := &models.Movies{}
 
-	err := row.Scan(&s.ID, &s.Title, &s.Original_title, &s.Genre, &s.Released_year_runtime, &s.Synopsis, &s.Rating, &s.Director, &s.Cast, &s.Distributor)
+	err := row.Scan(&s.ID, &s.Title, &s.Original_title, &s.Genre, &s.Released_year, &s.Released_status, &s.Synopsis, &s.Rating, &s.Director, &s.Cast, &s.Distributor)
 	if err != nil {
 
 		if errors.Is(err, sql.ErrNoRows) {
@@ -36,8 +36,8 @@ func (m *MoviesModel) Get(id int) (*models.Movies, error) {
 }
 
 func (m *MoviesModel) Latest() ([]*models.Movies, error) {
-	stmt := `SELECT id, title, original_title, genre, released_year_runtime, synopsis, rating, director, cast, distributor
-	FROM movies ORDER BY released_year_runtime DESC LIMIT 10`
+	stmt := `SELECT id, title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor
+	FROM movies ORDER BY released_year DESC LIMIT 10`
 
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
@@ -50,7 +50,7 @@ func (m *MoviesModel) Latest() ([]*models.Movies, error) {
 	for rows.Next() {
 		s := &models.Movies{}
 
-		err := rows.Scan(&s.ID, &s.Title, &s.Original_title, &s.Genre, &s.Released_year_runtime, &s.Synopsis, &s.Rating, &s.Director, &s.Cast, &s.Distributor)
+		err := rows.Scan(&s.ID, &s.Title, &s.Original_title, &s.Genre, &s.Released_year, &s.Released_status, &s.Synopsis, &s.Rating, &s.Director, &s.Cast, &s.Distributor)
 		if err != nil {
 			return nil, err
 		}
@@ -64,11 +64,11 @@ func (m *MoviesModel) Latest() ([]*models.Movies, error) {
 	return news, nil
 }
 
-func (m *MoviesModel) Insert(title, originalTitle, genre string, released_year_runtime time.Time, runtime time.Duration, synopsis string, rating float64, director, cast, distributor string) (int, error) {
-	stmt := `INSERT INTO movies (title, original_title, genre, released_year_runtime, synopsis, rating, director, cast, distributor)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+func (m *MoviesModel) Insert(title, originalTitle, genre string, released_year time.Time, released_status bool, synopsis string, rating float64, director, cast, distributor string) (int, error) {
+	stmt := `INSERT INTO movies (title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	result, err := m.DB.Exec(stmt, title, originalTitle, genre, released_year_runtime, synopsis, rating, director, cast, distributor)
+	result, err := m.DB.Exec(stmt, title, originalTitle, genre, released_year, synopsis, rating, director, cast, distributor)
 	if err != nil {
 		return 0, err
 	}
@@ -83,7 +83,7 @@ func (m *MoviesModel) Insert(title, originalTitle, genre string, released_year_r
 
 func (m *MoviesModel) GetMovieByGenre(genre string) ([]*models.Movies, error) {
 	stmt := `
-        SELECT id, title, original_title, genre, released_year_runtime, synopsis, rating, director, cast, distributor
+        SELECT id, title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor
         FROM movies
         WHERE genre = ?
         ORDER BY release_year DESC
@@ -99,7 +99,7 @@ func (m *MoviesModel) GetMovieByGenre(genre string) ([]*models.Movies, error) {
 
 	for rows.Next() {
 		s := &models.Movies{}
-		err := rows.Scan(&s.ID, &s.Title, &s.Original_title, &s.Genre, &s.Released_year_runtime, &s.Synopsis, &s.Rating, &s.Director, &s.Cast, &s.Distributor)
+		err := rows.Scan(&s.ID, &s.Title, &s.Original_title, &s.Genre, &s.Released_year, &s.Released_status, &s.Synopsis, &s.Rating, &s.Director, &s.Cast, &s.Distributor)
 		if err != nil {
 			return nil, err
 		}

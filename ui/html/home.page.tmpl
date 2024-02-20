@@ -13,7 +13,7 @@
             <th>Original_title</th>
             <th>Genre</th>
             <th>Released_year</th>
-            <th>Runtime</th>
+            <th>Released_status</th>
             <th>Synopsis</th>
             <th>Rating</th>
             <th>Director</th>
@@ -29,7 +29,7 @@
             <td>#{{.Original_title}}</td>
             <td>#{{.Genre}}</td>
             <td>{{humanDate .Released_year}}</td>
-            <td>{{humanTime .Runtime}}</td>
+            <td>#{{.Released_status}}</td>
             <td>#{{.Synopsis}}</td>
             <td>#{{.Rating}}</td>
             <td>#{{.Director}}</td>

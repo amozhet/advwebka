@@ -1,4 +1,4 @@
-//middleware.go
+// cmd/web/middleware.go
 
 package main
 

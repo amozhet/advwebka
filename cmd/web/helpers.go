@@ -1,4 +1,4 @@
-//helpers.go
+// cmd/web/helpers.go
 
 package main
 
