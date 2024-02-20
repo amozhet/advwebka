@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"strings"
 
-	"AituNews/pkg/models"
+	"Movies/pkg/models"
 )
 
 type UserModel struct {

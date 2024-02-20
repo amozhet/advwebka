@@ -3,8 +3,8 @@
 package main
 
 import (
-	"AituNews/pkg/forms"
-	"AituNews/pkg/models"
+	"Movies/pkg/forms"
+	"Movies/pkg/models"
 	"html/template"
 	"path/filepath"
 	"time"
@@ -18,17 +18,21 @@ type templateData struct {
 	Form            *forms.Form
 	IsAuthenticated bool
 
-	News  *models.Movies
-	New2s []*models.Movies
-	User  *models.User
+	Movies  *models.Movies
+	Movies2 []*models.Movies
+	User    *models.User
 }
 
 func humanDate(t time.Time) string {
-	return t.Format("02 Jan 2006 at 15:04")
+	return t.Format("02 Jan 2006")
+}
+func humanTime(t time.Time) string {
+	return t.Format("15:04:59")
 }
 
 var functions = template.FuncMap{
 	"humanDate": humanDate,
+	"humanTime": humanTime,
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {

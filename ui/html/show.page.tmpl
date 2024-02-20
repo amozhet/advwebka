@@ -1,9 +1,9 @@
 {{template "base" .}}
 
-{{define "title"}}News #{{.News.ID}}{{end}}
+{{define "title"}}News #{{.Movies.ID}}{{end}}
 
 {{define "main"}}
-    {{with .News}}
+    {{with .Movies}}
     <div class='news'>
         <div class='metadata'>
             <strong>{{.Title}}</strong>

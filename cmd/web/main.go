@@ -3,12 +3,13 @@
 package main
 
 import (
-	"AituNews/pkg/models/mysql"
+	"Movies/pkg/models/mysql"
 	"crypto/tls"
 	"database/sql"
 	"flag"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golangcollege/sessions"
+	"github.com/joho/godotenv"
 	"html/template"
 	"log"
 	"net/http"
@@ -30,9 +31,15 @@ type application struct {
 }
 
 func main() {
-	addr := flag.String("addr", os.Getenv("PORT"), "HTTP network address")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("err loading: %v", err)
+	}
+
+	addr := flag.String("addr", ":5000", "HTTP network address")
 	dsn := flag.String("dsn", os.Getenv("DB_LINK"), "MySQL data source name")
-	secret := flag.String("secret", os.Getenv("SECRET_KEY"), "Secret key")
+	secret_key := os.Getenv("SECRET_KEY")
+	secret := flag.String("secret", secret_key, "Secret key")
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)

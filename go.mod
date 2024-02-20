@@ -1,4 +1,4 @@
-module AituNews
+module Movies
 
 go 1.21
 

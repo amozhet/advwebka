@@ -3,7 +3,7 @@
 package main
 
 import (
-	"AituNews/pkg/models"
+	"Movies/pkg/models"
 	"context"
 	"errors"
 	"fmt"

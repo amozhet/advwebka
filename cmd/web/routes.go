@@ -16,10 +16,10 @@ func (app *application) routes() http.Handler {
 	mux := pat.New()
 
 	mux.Get("/", dynamicMiddleware.ThenFunc(app.home))
-	mux.Get("/category/student", dynamicMiddleware.ThenFunc(app.category))
-	mux.Get("/category/staff", dynamicMiddleware.ThenFunc(app.category))
-	mux.Get("/category/applicant", dynamicMiddleware.ThenFunc(app.category))
-	mux.Get("/category/research", dynamicMiddleware.ThenFunc(app.category))
+	mux.Get("/genre/horror", dynamicMiddleware.ThenFunc(app.genre))
+	mux.Get("/genre/comedy", dynamicMiddleware.ThenFunc(app.genre))
+	mux.Get("/genre/drama", dynamicMiddleware.ThenFunc(app.genre))
+	mux.Get("/genre/scifi", dynamicMiddleware.ThenFunc(app.genre))
 
 	mux.Get("/movies/create", dynamicMiddleware.Append(app.requireAuthentication).ThenFunc(app.createMoviesForm))
 	mux.Post("/movies/create", dynamicMiddleware.Append(app.requireAuthentication).ThenFunc(app.createMovies))

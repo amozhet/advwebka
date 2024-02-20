@@ -3,8 +3,8 @@
 package main
 
 import (
-	"AituNews/pkg/forms"
-	"AituNews/pkg/models"
+	"Movies/pkg/forms"
+	"Movies/pkg/models"
 	"errors"
 	"fmt"
 	"net/http"
@@ -22,7 +22,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.render(w, r, "home.page.tmpl", &templateData{
-		New2s: s,
+		Movies2: s,
 	})
 }
 
@@ -43,15 +43,15 @@ func (app *application) showMovies(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.render(w, r, "show.page.tmpl", &templateData{
-		News: s,
+		Movies: s,
 	})
 }
 
-func (app *application) category(w http.ResponseWriter, r *http.Request) {
+func (app *application) genre(w http.ResponseWriter, r *http.Request) {
 	segments := strings.Split(r.URL.Path, "/")
-	category := segments[len(segments)-1]
+	genre := segments[len(segments)-1]
 
-	s, err := app.movies.LatestByGenre(category)
+	s, err := app.movies.GetMovieByGenre(genre)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
 			app.notFound(w)
@@ -61,7 +61,7 @@ func (app *application) category(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, r, "home.page.tmpl", &templateData{New2s: s})
+	app.render(w, r, "home.page.tmpl", &templateData{Movies2: s})
 }
 
 func (app *application) createMoviesForm(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +79,7 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form := forms.New(r.PostForm)
-	form.Required("title", "genre", "release_year", "runtime", "director")
+	form.Required("title", "genre", "released_year_runtime", "director")
 	form.MaxLength("title", 100)
 
 	if !form.Valid() {
@@ -87,49 +87,41 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Convert release_year from string to time.Time
-	releaseYear, err := time.Parse("2006-01-02", form.Get("release_year"))
-	if err != nil {
-		// Handle parsing error
-		return
-	}
-
-	// Convert runtime from string to time.Duration
-	runtime, err := time.ParseDuration(form.Get("runtime"))
-	if err != nil {
-		// Handle parsing error
-		return
-	}
-
-	// Convert rating from string to float64
 	rating, err := strconv.ParseFloat(form.Get("rating"), 64)
 	if err != nil {
-		// Handle parsing error
+		app.clientError(w, http.StatusBadRequest)
 		return
 	}
 
-	id, err := app.movies.Insert(
-		form.Get("title"),
-		form.Get("original_title"),
-		form.Get("genre"),
-		releaseYear,
-		runtime,
-		form.Get("synopsis"),
-		rating,
-		form.Get("director"),
-		form.Get("cast"),
-		form.Get("distributor"),
-		form.Get("trailer_url"),
-		form.Get("poster_url"),
-	)
+	releasedYearRuntime := form.Get("released_year_runtime")
+	yearRuntime := strings.Split(releasedYearRuntime, "_")
+	if len(yearRuntime) != 2 {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	releasedYear, err := time.Parse("2006-12-31", yearRuntime[0])
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	runtime, err := time.ParseDuration(yearRuntime[1])
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	id, err := app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, runtime, form.Get("synopsis"),
+		rating, form.Get("director"), form.Get("cast"), form.Get("distributor"))
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	app.session.Put(r, "flash", "Movie successfully created!")
+	app.session.Put(r, "flash", "News successfully created!")
 
-	http.Redirect(w, r, fmt.Sprintf("/movies/%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/news/%d", id), http.StatusSeeOther)
 }
 
 func (app *application) signupUserForm(w http.ResponseWriter, r *http.Request) {
