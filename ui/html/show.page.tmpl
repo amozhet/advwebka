@@ -5,9 +5,16 @@
 {{define "main"}}
     {{with .Movies}}
     <div class='movies'>
+
         <div class='metadata'>
             <strong>{{.Title}}</strong>
             <span>#{{.ID}}</span>
+        </div>
+
+        <div class='metadata'>
+            {{with .Original_title}}
+                <p>Original title: {{.}} </p>
+            {{end}}
         </div>
 
 
@@ -29,26 +36,6 @@
                   {{ end }}
                 </span>
          </div>
-
-
-
-        <div class='metadata'>
-            {{with .Original_title}}
-                <p>Original title: {{.Original_title}} </p>
-            {{end}}
-        </div>
-        <div class='metadata'>
-            {{with .Original_title}}
-                <p>Original title: {{.Original_title}} </p>
-            {{end}}
-        </div>
-
-
-
-
-
-
-
 
         <pre style="white-space: pre-wrap;"><code>{{.Synopsis}}</code></pre>
 

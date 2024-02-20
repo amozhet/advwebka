@@ -94,13 +94,19 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	releasedYear, err := time.Parse("2006-01-02 15:04:00", form.Get("released_year"))
+	releasedYear, err := time.Parse("2006-01-02T15:04", form.Get("released_year"))
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
 
-	id, err := app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, form.Get("released_status"), form.Get("synopsis"),
+	released_status, err := strconv.ParseBool(form.Get("released_status"))
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	id, err := app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, released_status, form.Get("synopsis"),
 		rating, form.Get("director"), form.Get("cast"), form.Get("distributor"))
 	if err != nil {
 		app.serverError(w, err)
