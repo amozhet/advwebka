@@ -24,7 +24,7 @@ type templateData struct {
 }
 
 func humanDate(t time.Time) string {
-	return t.Format("02 Jan 2006")
+	return t.Format("02 Jan 2006 15:04:59")
 }
 func humanTime(t time.Time) string {
 	return t.Format("15:04:59")

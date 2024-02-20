@@ -1,9 +1,9 @@
 {{template "base" .}}
 
-{{define "title"}}Create News{{end}}
+{{define "title"}}Add Movie{{end}}
 
 {{define "main"}}
-<form action='/news/create' method='POST'>
+<form action='/movies/create' method='POST'>
     <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
     {{with .Form}}
 
@@ -16,29 +16,71 @@
     </div>
 
     <div>
-        <label>Content:</label>
-        {{with .Errors.Get "content"}}
+            <label>Original title:</label>
+            <input type='text' name='original_title' value='{{.Get "original_title"}}'>
+    </div>
+
+     <div>
+              <label>Genre:</label>
+              <select name="genre">
+                  <option value="horror">Horror</option>
+                  <option value="comedy">Comedy</option>
+                  <option value="drama">Drama</option>
+                  <option value="scifi">Sci-fi</option>
+
+              </select>
+     </div>
+
+     <div>
+            <label>Released year and Runtime:</label>
+            {{with .Errors.Get "released_year"}}
+                <label class='error'>{{.}}</label>
+            {{end}}
+            <input type='datetime-local' name='released_year' value='{{.Get "released_year"}}'>
+     </div>
+
+
+    <div>
+        <label for="released_status">Released:</label>
+        <input type="checkbox" id="released_status" name="released_status" value="true">
+    </div>
+
+
+    <div>
+        <label>Synopsis:</label>
+        <textarea name='synopsis'>{{.Get "synopsis"}}</textarea>
+    </div>
+
+
+    <div>
+                <label>Rating:</label>
+                <input type='text' name='rating' value='{{.Get "rating"}}'>
+        </div>
+
+     <div>
+            <label>Director:</label>
+            {{with .Errors.Get "director"}}
+                <label class='error'>{{.}}</label>
+            {{end}}
+            <input type='text' name='director' value='{{.Get "director"}}'>
+        </div>
+
+    <div>
+                <label>Cast:</label>
+                <input type='text' name='cast' value='{{.Get "cast"}}'>
+        </div>
+
+
+ <div>
+        <label>Distributor:</label>
+        {{with .Errors.Get "distributor"}}
             <label class='error'>{{.}}</label>
         {{end}}
-        <textarea name='content'>{{.Get "content"}}</textarea>
-    </div>
-    <div>
-          <label>Details:</label>
-          <textarea name='details'></textarea>
-    </div>
-    <div>
-          <label>Category:</label>
-          <select name="category">
-              <option value="student">Student</option>
-              <option value="staff">Staff</option>
-              <option value="applicant">Applicant</option>
-              <option value="research">Research</option>
-
-          </select>
+        <input type='text' name='distributor' value='{{.Get "distributor"}}'>
     </div>
 
     <div>
-        <input type='submit' value='Publish'>
+        <input type='submit' value='Add'>
     </div>
 
 
@@ -46,3 +88,4 @@
 
 </form>
 {{end}}
+

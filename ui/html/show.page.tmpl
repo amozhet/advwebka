@@ -1,19 +1,36 @@
 {{template "base" .}}
 
-{{define "title"}}News #{{.Movies.ID}}{{end}}
+{{define "title"}}Movies #{{.Movies.ID}}{{end}}
 
 {{define "main"}}
     {{with .Movies}}
-    <div class='news'>
+    <div class='movies'>
         <div class='metadata'>
             <strong>{{.Title}}</strong>
             <span>#{{.ID}}</span>
         </div>
-        <pre><code>{{.Content}}</code></pre>
-        <div class='metadata'>
-           <time>Created: {{humanDate .Created}}</time>
+
+
+        <div>
+            {{with .Original_title}}
+                <p>Original title: {{.Original_title}} </p>
+            {{end}}
         </div>
+
+
+
+        <pre style="white-space: pre-wrap;"><code>{{.Synopsis}}</code></pre>
+
+
+        <div class='metadata'>
+           <time>Released year and Runtime: {{humanDate .Released_year}}</time>
+        </div>
+
+
+
+
+
+
     </div>
     {{end}}
 {{end}}
-

@@ -98,11 +98,10 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
-	releasedStatusStr := form.Get("released_status")
-	releasedStatus, err := strconv.ParseBool(releasedStatusStr)
-	if err != nil {
-		// Handle error if conversion fails
-		return
+
+	releasedStatus := false
+	if form.Get("released_status") == "on" {
+		releasedStatus = true
 	}
 
 	id, err := app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, releasedStatus, form.Get("synopsis"),
@@ -112,9 +111,9 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.session.Put(r, "flash", "News successfully created!")
+	app.session.Put(r, "flash", "Movie successfully created!")
 
-	http.Redirect(w, r, fmt.Sprintf("/news/%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/movies/%d", id), http.StatusSeeOther)
 }
 
 func (app *application) signupUserForm(w http.ResponseWriter, r *http.Request) {

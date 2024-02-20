@@ -16,6 +16,7 @@ type MoviesModel struct {
 func (m *MoviesModel) Get(id int) (*models.Movies, error) {
 
 	stmt := `SELECT id, title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor
+    FROM movies
     WHERE id = ?`
 
 	row := m.DB.QueryRow(stmt, id)
@@ -46,7 +47,7 @@ func (m *MoviesModel) Latest() ([]*models.Movies, error) {
 
 	defer rows.Close()
 
-	news := []*models.Movies{}
+	movies := []*models.Movies{}
 	for rows.Next() {
 		s := &models.Movies{}
 
@@ -54,21 +55,21 @@ func (m *MoviesModel) Latest() ([]*models.Movies, error) {
 		if err != nil {
 			return nil, err
 		}
-		news = append(news, s)
+		movies = append(movies, s)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return news, nil
+	return movies, nil
 }
 
 func (m *MoviesModel) Insert(title, originalTitle, genre string, released_year time.Time, released_status bool, synopsis string, rating float64, director, cast, distributor string) (int, error) {
 	stmt := `INSERT INTO movies (title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	result, err := m.DB.Exec(stmt, title, originalTitle, genre, released_year, synopsis, rating, director, cast, distributor)
+	result, err := m.DB.Exec(stmt, title, originalTitle, genre, released_year, released_status, synopsis, rating, director, cast, distributor)
 	if err != nil {
 		return 0, err
 	}
