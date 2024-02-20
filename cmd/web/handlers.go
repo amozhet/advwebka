@@ -79,8 +79,9 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form := forms.New(r.PostForm)
-	form.Required("title", "genre", "released_year", "director", "released_status")
+	form.Required("title", "genre", "released_year", "released_status", "director")
 	form.MaxLength("title", 100)
+	form.PermittedValues("released_status", "TRUE", "FALSE")
 
 	if !form.Valid() {
 		app.render(w, r, "create.page.tmpl", &templateData{Form: form})
@@ -99,12 +100,7 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	releasedStatus := false
-	if form.Get("released_status") == "on" {
-		releasedStatus = true
-	}
-
-	id, err := app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, releasedStatus, form.Get("synopsis"),
+	id, err := app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, form.Get("released_status"), form.Get("synopsis"),
 		rating, form.Get("director"), form.Get("cast"), form.Get("distributor"))
 	if err != nil {
 		app.serverError(w, err)

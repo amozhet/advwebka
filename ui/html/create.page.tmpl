@@ -41,9 +41,16 @@
 
 
     <div>
-        <label for="released_status">Released:</label>
-        <input type="checkbox" id="released_status" name="released_status" value="true">
-    </div>
+        <label>Released Status:</label>
+        {{with .Errors.Get "released_status"}}
+                        <label class='error'>{{.}}</label>
+                    {{end}}
+                                {{$exp := or (.Get "released_status") "TRUE"}}
+
+                <input type='radio' name='released_status' value='TRUE' {{if (eq $exp "TRUE")}}checked{{end}}> Released
+                <input type='radio' name='released_status' value='FALSE' {{if (eq $exp "FALSE")}}checked{{end}}> Uneleased
+            </div>
+  </div>
 
 
     <div>
@@ -55,7 +62,7 @@
     <div>
                 <label>Rating:</label>
                 <input type='text' name='rating' value='{{.Get "rating"}}'>
-        </div>
+    </div>
 
      <div>
             <label>Director:</label>
@@ -63,15 +70,15 @@
                 <label class='error'>{{.}}</label>
             {{end}}
             <input type='text' name='director' value='{{.Get "director"}}'>
-        </div>
+     </div>
 
     <div>
                 <label>Cast:</label>
                 <input type='text' name='cast' value='{{.Get "cast"}}'>
-        </div>
+    </div>
 
 
- <div>
+    <div>
         <label>Distributor:</label>
         {{with .Errors.Get "distributor"}}
             <label class='error'>{{.}}</label>
@@ -84,8 +91,8 @@
     </div>
 
 
-{{end}}
+        {{end}}
 
-</form>
+    </form>
 {{end}}
 

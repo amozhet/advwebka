@@ -11,7 +11,33 @@
         </div>
 
 
-        <div>
+        <div class='metadata'>
+                <p>Genre: {{.Genre}} </p>
+        </div>
+
+         <div class='metadata'>
+                   <time>Released year and Runtime: {{humanDate .Released_year}}</time>
+         </div>
+
+
+         <div class='metadata'>
+                <span>
+                  {{ if .Released_status }}
+                    Released on and duration {{humanDate .Released_year }}
+                  {{ else }}
+                    Not yet released.
+                  {{ end }}
+                </span>
+         </div>
+
+
+
+        <div class='metadata'>
+            {{with .Original_title}}
+                <p>Original title: {{.Original_title}} </p>
+            {{end}}
+        </div>
+        <div class='metadata'>
             {{with .Original_title}}
                 <p>Original title: {{.Original_title}} </p>
             {{end}}
@@ -19,12 +45,15 @@
 
 
 
+
+
+
+
+
         <pre style="white-space: pre-wrap;"><code>{{.Synopsis}}</code></pre>
 
 
-        <div class='metadata'>
-           <time>Released year and Runtime: {{humanDate .Released_year}}</time>
-        </div>
+
 
 
 

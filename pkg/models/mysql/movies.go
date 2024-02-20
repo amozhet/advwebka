@@ -65,7 +65,7 @@ func (m *MoviesModel) Latest() ([]*models.Movies, error) {
 	return movies, nil
 }
 
-func (m *MoviesModel) Insert(title, originalTitle, genre string, released_year time.Time, released_status bool, synopsis string, rating float64, director, cast, distributor string) (int, error) {
+func (m *MoviesModel) Insert(title, originalTitle, genre string, released_year time.Time, released_status, synopsis string, rating float64, director, cast, distributor string) (int, error) {
 	stmt := `INSERT INTO movies (title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
@@ -87,8 +87,7 @@ func (m *MoviesModel) GetMovieByGenre(genre string) ([]*models.Movies, error) {
         SELECT id, title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor
         FROM movies
         WHERE genre = ?
-        ORDER BY release_year DESC
-    `
+        ORDER BY released_year DESC`
 
 	rows, err := m.DB.Query(stmt, genre)
 	if err != nil {
