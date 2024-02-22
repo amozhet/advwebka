@@ -6,12 +6,18 @@ import (
 	"Movies/pkg/models"
 	"database/sql"
 	"errors"
+	"strings"
 	"time"
 )
 
 type MoviesModel struct {
 	DB *sql.DB
 }
+
+var (
+	ErrNoMovie   = errors.New("models: no matching movie found")
+	ErrDuplicate = errors.New("models: duplicate movie title")
+)
 
 func (m *MoviesModel) Get(id int) (*models.Movies, error) {
 
@@ -80,6 +86,32 @@ func (m *MoviesModel) Insert(title, originalTitle, genre string, released_year t
 	}
 
 	return int(id), nil
+}
+func (m *MoviesModel) Update(title, originalTitle, genre string, released_year time.Time, released_status bool, synopsis string, rating float64, director, cast, distributor string) error {
+	stmt := `UPDATE movies SET title=?, original_title=?, genre, released_year=?, released_status=?, synopsis=?, rating=?, director=?, cast=?, distributor=? WHERE id=?`
+	_, err := m.DB.Exec(stmt, title, originalTitle, genre, released_year, released_status, synopsis, rating, director, cast, distributor)
+	if err != nil {
+		if isDuplicateError(err) {
+			return ErrDuplicate
+		}
+		return err
+	}
+	return nil
+}
+func (m *MoviesModel) Delete(id int) error {
+	stmt := `DELETE FROM movies WHERE id=?`
+
+	_, err := m.DB.Exec(stmt, id)
+	if err != nil {
+		if isDuplicateError(err) {
+			return ErrDuplicate
+		}
+		return err
+	}
+	return nil
+}
+func isDuplicateError(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "Error 1062:")
 }
 
 func (m *MoviesModel) GetMovieByGenre(genre string) ([]*models.Movies, error) {

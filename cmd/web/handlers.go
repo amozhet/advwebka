@@ -118,6 +118,78 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/movies/%d", id), http.StatusSeeOther)
 }
 
+func (app *application) updateMovies(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+	id, err := strconv.Atoi(r.PostForm.Get("id"))
+	if err != nil || id < 1 {
+		app.notFound(w)
+		return
+	}
+	form := forms.New(r.PostForm)
+	form.Required("title", "genre", "released_year", "released_status", "director")
+	form.MaxLength("title", 100)
+	form.PermittedValues("released_status", "TRUE", "FALSE")
+
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	rating, err := strconv.ParseFloat(form.Get("rating"), 64)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	releasedYear, err := time.Parse("2006-01-02T15:04", form.Get("released_year"))
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	released_status, err := strconv.ParseBool(form.Get("released_status"))
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	id, err = app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, released_status, form.Get("synopsis"),
+		rating, form.Get("director"), form.Get("cast"), form.Get("distributor"))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.session.Put(r, "flash", "Movie successfully updated!")
+
+	http.Redirect(w, r, fmt.Sprintf("/movies/%d", id), http.StatusSeeOther)
+}
+
+func (app *application) deleteMovies(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+
+	id, err := strconv.Atoi(r.FormValue("id"))
+	if err != nil || id < 1 {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	err = app.movies.Delete(id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.session.Put(r, "flash", "Movie successfully deleted!")
+
+	http.Redirect(w, r, fmt.Sprintf("/movies/%d", id), http.StatusSeeOther)
+}
 func (app *application) signupUserForm(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, "signup.page.tmpl", &templateData{
 		Form: forms.New(nil),
@@ -136,7 +208,7 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 	form.MaxLength("name", 255)
 	form.MaxLength("email", 255)
 	form.MatchesPattern("email", forms.EmailRX)
-	form.MinLength("password", 10)
+	form.MinLength("password", 3)
 
 	if !form.Valid() {
 		app.render(w, r, "signup.page.tmpl", &templateData{Form: form})
