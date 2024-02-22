@@ -6,6 +6,7 @@ import (
 	"Movies/pkg/models"
 	"database/sql"
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -75,11 +76,12 @@ func (m *MoviesModel) Insert(title, originalTitle, genre string, released_year t
 	}
 
 	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
+	if err != nil || isDuplicateError(err) {
+		return 0, models.ErrDuplicateMovie
 	}
 
 	return int(id), nil
+
 }
 
 func (m *MoviesModel) GetMovieByGenre(genre string) ([]*models.Movies, error) {
@@ -111,4 +113,21 @@ func (m *MoviesModel) GetMovieByGenre(genre string) ([]*models.Movies, error) {
 	}
 
 	return movies, nil
+}
+
+func isDuplicateError(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "Error 1062:")
+}
+
+func (m *MoviesModel) Update(title, original_title, genre string, released_year time.Time, released_status bool, synopsis string, rating float64, director, cast, distributor string) error {
+	stmt := `UPDATE movies SET title=?, original_title=?, genre=?, released_year=?, released_status=?, synopsis=?, 
+                rating=?, director=?, cast=?, distributor=?
+              WHERE id=?`
+
+	_, err := m.DB.Exec(stmt, title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

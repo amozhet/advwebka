@@ -3,6 +3,8 @@
 {{define "title"}}Movies #{{.Movies.ID}}{{end}}
 
 {{define "main"}}
+    <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
+
     {{with .Movies}}
     <div class='movies'>
 
@@ -39,14 +41,27 @@
 
         <pre style="white-space: pre-wrap;"><code>{{.Synopsis}}</code></pre>
 
+        <div class='metadata'>
+                <p>Rating: {{.Rating}} </p>
+        </div>
+
+        <div class='metadata'>
+                <p>Director: {{.Director}} </p>
+        </div>
+
+        <div class='metadata'>
+                    {{with .Cast}}
+                        <p>Cast: {{.}} </p>
+                    {{end}}
+        </div>
+
+        <div class='metadata'>
+                <p>Distributor: {{.Distributor}} </p>
+        </div>
 
 
+        </div>
 
-
-
-
-
-
-    </div>
     {{end}}
+
 {{end}}

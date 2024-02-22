@@ -108,7 +108,10 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 
 	id, err := app.movies.Insert(form.Get("title"), form.Get("original_title"), form.Get("genre"), releasedYear, released_status, form.Get("synopsis"),
 		rating, form.Get("director"), form.Get("cast"), form.Get("distributor"))
-	if err != nil {
+	if errors.Is(err, models.ErrDuplicateMovie) {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	} else if err != nil {
 		app.serverError(w, err)
 		return
 	}
@@ -116,6 +119,54 @@ func (app *application) createMovies(w http.ResponseWriter, r *http.Request) {
 	app.session.Put(r, "flash", "Movie successfully created!")
 
 	http.Redirect(w, r, fmt.Sprintf("/movies/%d", id), http.StatusSeeOther)
+}
+
+func (app *application) updateMovies(w http.ResponseWriter, r *http.Request) {
+
+	err := r.ParseForm()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PostForm.Get("id"))
+	if err != nil || id < 1 {
+		app.notFound(w)
+		return
+	}
+
+	title := r.PostForm.Get("title")
+	original_title := r.PostForm.Get("original_title")
+	genre := r.PostForm.Get("genre")
+	synopsis := r.PostForm.Get("synopsis")
+	director := r.PostForm.Get("director")
+	cast := r.PostForm.Get("cast")
+	distributor := r.PostForm.Get("distributor")
+
+	rating, err := strconv.ParseFloat(r.PostForm.Get("released_year"), 64)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	released_year, err := time.Parse("2006-01-02T15:04", r.PostForm.Get("released_year"))
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	released_status, err := strconv.ParseBool(r.PostForm.Get("released_status"))
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	err = app.movies.Update(title, original_title, genre, released_year, released_status, synopsis, rating, director, cast, distributor)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 }
 
 func (app *application) signupUserForm(w http.ResponseWriter, r *http.Request) {
